@@ -4,57 +4,26 @@ import { Configuration, OpenAIApi } from "openai";
 
 const configuration = new Configuration({
     organization: "org-EQ0HqXMyMWLRaxHPJvoibuFv",
-    apiKey: "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",
+    apiKey: "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",
 });
 const openai = new OpenAIApi(configuration);
 
-const movimentacoes = [
-    {
-        "data": "2023-06-28",
-        "descricao": "Compra no site aliexpress",
-        "valor": 50.0,
-        "categoria": "Entretenimento"
-    },
-    {
-        "data": "2023-06-29",
-        "descricao": "Libanesa",
-        "valor": 10.0,
-        "categoria": "Alimentação"
-    },
-    {
-        "data": "2023-07-01",
-        "descricao": "Netflix",
-        "valor": 34.0,
-        "categoria": "Entretenimento"
-    },
-    {
-        "data": "2023-07-02",
-        "descricao": "Ifood",
-        "valor": 40.0,
-        "categoria": "Alimentação"
+async function consultarDados(req) {
+    let result = { movimentacoes: [], receitas: [] };
+    const dados = JSON.parse(await fs.readFile('./data/movimentacoes.json', 'utf-8'));
+    for (let item of dados){
+        if (item.email == req.headers.authorization){
+            result.movimentacoes = item.movimentacoes;
+            result.receitas = item.receitas;
+        }
     }
-]
+    return result;
+}
 
-const receitas = [
-    {
-        "data": "2023-07-02",
-        "descricao": "Salário",
-        "valor": 1000.0,
-        "categoria": "Receita"
-    }
-]
 
 async function consultar(req, res, next) {
     try {
-        let result = { movimentacoes: [] }
-        const dados = JSON.parse(await fs.readFile('./data/movimentacoes.json', 'utf-8'));
-        console.log(req.headers.authorization);
-        for (let item of dados){
-            if (item.email == req.headers.authorization){
-                result = item.movimentacoes;
-            }
-        }
-        
+        let result = await consultarDados(req);
         res.send({ data: result });
     } catch (err) {
         next(err);
@@ -65,11 +34,12 @@ async function consultarSaldos(req, res, next) {
     try {
         let debito = 0;
         let receita = 0;
-        let result = []
-        for (let item of movimentacoes) {
+        let dados = await consultarDados(req);
+        let result = [];
+        for (let item of dados.movimentacoes) {
             debito += item.valor;
         }
-        for (let item of receitas) {
+        for (let item of dados.receitas) {
             receita += item.valor;
         }
         result.push({ tipo: "Receita", valor: receita });
@@ -85,13 +55,14 @@ async function consultarScore(req, res, next) {
         let debito = 0;
         let receita = 0;
         let result = 0;
-        for (let item of movimentacoes) {
+        let dados = await consultarDados(req);
+        for (let item of dados.movimentacoes) {
             debito += item.valor;
         }
-        for (let item of receitas) {
+        for (let item of dados.receitas) {
             receita += item.valor;
         }
-        result = (parseFloat(receita) / (parseFloat(debito)) / 2) * 100;
+        result = (parseFloat(receita)*2 / (parseFloat(debito)) * 100);
         res.send({ data: parseInt(result) });
     } catch (err) {
         next(err);
@@ -104,12 +75,17 @@ async function consultarSugestoes(req, res, next) {
         let debito = 0;
         let receita = 0;
         let result = 0;
-        for (let item of movimentacoes) {
+        let dados = await consultarDados(req);
+        let movimentacoes = [];
+        for (let item of dados.movimentacoes) {
             if (item.categoria == "Dívidas"){
                 debito += item.valor;
+            }else{
+                movimentacoes.push(item);
             }
         }
-        for (let item of receitas) {
+        
+        for (let item of dados.receitas) {
             receita += item.valor;
         }
         result = (parseFloat(debito) / parseFloat(receita)) * 100;

@@ -8,6 +8,7 @@ app.use(express.json());
 app.use(cors());
 
 //rotas
+app.use("/", express.static('public'));
 app.use("/login", loginRoute);
 app.use("/movimentacao", movimentacoesRouter);
 

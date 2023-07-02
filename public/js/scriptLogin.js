@@ -1,4 +1,4 @@
-urlApi = "https://arthurbentivenha-automatic-disco-75rjjj7qxr5hwxjq-3000.preview.app.github.dev";
+urlApi = ".";
 
 function entrar() {
     var email = document.getElementById("email").value;

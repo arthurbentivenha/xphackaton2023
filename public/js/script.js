@@ -1,4 +1,4 @@
-urlApi = "https://arthurbentivenha-automatic-disco-75rjjj7qxr5hwxjq-3000.preview.app.github.dev";
+urlApi = ".";
 
 function consultarMovimentacao() {
     $.ajax({
@@ -100,6 +100,11 @@ function init() {
     score();
     document.getElementById("atualizado").innerHTML = "Atualizado em: " + new Date().toLocaleString();
     document.getElementById("nome").innerHTML = localStorage.getItem("email");
+}
+
+function logout(){
+    localStorage.removeItem("email");
+    window.location.href = "index.html";
 }
 
 init();
