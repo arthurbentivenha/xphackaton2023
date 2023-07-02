@@ -1,3 +1,5 @@
+import dotenv from "dotenv";
+dotenv.config();
 import express from "express";
 import cors from "cors";
 import loginRoute from "./routes/login.routes.js";
@@ -12,6 +14,6 @@ app.use("/", express.static('public'));
 app.use("/login", loginRoute);
 app.use("/movimentacao", movimentacoesRouter);
 
-app.listen(3000, async () => {
-   console.log("API Started!");	
+app.listen(process.env.PORT, async () => {
+   console.log("Pronto! Porta: " + process.env.PORT);	
 });

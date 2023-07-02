@@ -2,12 +2,6 @@ import axios from "axios";
 import { promises as fs } from "fs";
 import { Configuration, OpenAIApi } from "openai";
 
-const configuration = new Configuration({
-    organization: "org-EQ0HqXMyMWLRaxHPJvoibuFv",
-    apiKey: "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",
-});
-const openai = new OpenAIApi(configuration);
-
 async function consultarDados(req) {
     let result = { movimentacoes: [], receitas: [] };
     const dados = JSON.parse(await fs.readFile('./data/movimentacoes.json', 'utf-8'));
@@ -71,6 +65,12 @@ async function consultarScore(req, res, next) {
 
 async function consultarSugestoes(req, res, next) {
     try {
+        const configuration = new Configuration({
+            organization: process.env.organizationChatGPT,
+            apiKey: process.env.apiKeyChatGPT,
+        });
+        
+        const openai = new OpenAIApi(configuration);
 
         let debito = 0;
         let receita = 0;
