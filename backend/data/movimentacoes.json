@@ -1,0 +1,13 @@
+[
+    {
+        "email": "teste@teste.com.br",
+        "movimentacoes": [
+            {
+                "data": "10/10/2010",
+                "descricao": "Conta de luz",
+                "valor": 100,
+                "categoria": "Casa"
+            }
+        ]
+    }
+]
